@@ -214,6 +214,15 @@ clean_df_uc <- function(fl){
   file1$has_uc <- 1
   file1[which(file1$uc_name == "" | file1$uc_name == "NULL"),]$has_uc <- 0
   file1 <- file1[grepl('Pentavalent-3',file1$Vaccination,ignore.case=TRUE),]
+  
+  # use uc name
+  use_uc <- file1[(file1$has_uc == 1),]
+  new_use_uc <- use_uc[,c(3,4,5,6,7)]
+  colnames(new_use_uc)[colnames(new_use_uc)=="uc_name"] <- "UC"
+  colnames(new_use_uc)[colnames(new_use_uc)=="town_name"] <- "TEHSIL"
+  colnames(new_use_uc)[colnames(new_use_uc) == "daily_reg_no"] <- "Vaccination"
+  
+  # use coordinates
   no_uc <- file1[(file1$has_uc == 0),]
   no_uc$valid <- 1
   no_uc$valid[no_uc$lat == "0.0"] <- 0
@@ -225,24 +234,25 @@ clean_df_uc <- function(fl){
   no_uc <- transform(no_uc, lat = as.numeric(lat),
                      long = as.numeric(long))
   no_uc$valid[no_uc$long < 60  || no_uc$lat < 20 || no_uc$long >90 || no_uc$lat > 50] <- 0
-  use_coords <- no_uc[(no_uc$valid == 1),]
-  use_coords <- na.exclude(use_coords)
-  coordinates(use_coords)<- ~long +lat
-  proj4string(use_coords) <- proj4string(uc_shp)
-  f_pts <- over(use_coords, uc_shp)
-  use_uc <- file1[(file1$has_uc == 1),]
-  new_use_coords <- f_pts[,c(3,4)]
-  new_use_coords <- cbind(new_use_coords, use_coords$lat, use_coords$long)
-  new_use_uc <- use_uc[,c(3,4,5,6,7)]
-  new_use_coords <- cbind(new_use_coords,use_coords$Vaccination)
-  colnames(new_use_uc)[colnames(new_use_uc)=="uc_name"] <- "UC"
-  colnames(new_use_uc)[colnames(new_use_uc)=="town_name"] <- "TEHSIL"
-  colnames(new_use_coords)[colnames(new_use_coords) == "use_coords$Vaccination"] <- "Vaccination"
-  colnames(new_use_uc)[colnames(new_use_uc) == "daily_reg_no"] <- "Vaccination"
-  colnames(new_use_coords)[colnames(new_use_coords) == "use_coords$lat"] <- "lat"
-  colnames(new_use_coords)[colnames(new_use_coords) == "use_coords$long"] <- "long"
-  vaccs_data <- rbind(new_use_coords,new_use_uc)
-  vaccs_data[complete.cases(vaccs_data$UC),]
+  
+  if (nrow(no_uc[(no_uc$valid == 1),]) > 0) {
+    use_coords <- no_uc[(no_uc$valid == 1),]
+    use_coords <- na.exclude(use_coords)
+    coordinates(use_coords)<- ~long +lat
+    proj4string(use_coords) <- proj4string(uc_shp)
+    f_pts <- over(use_coords, uc_shp)
+    new_use_coords <- f_pts[,c(3,4)]
+    new_use_coords <- cbind(new_use_coords, use_coords$lat, use_coords$long)
+    new_use_coords <- cbind(new_use_coords,use_coords$Vaccination)
+    colnames(new_use_coords)[colnames(new_use_coords) == "use_coords$Vaccination"] <- "Vaccination"
+    colnames(new_use_coords)[colnames(new_use_coords) == "use_coords$lat"] <- "lat"
+    colnames(new_use_coords)[colnames(new_use_coords) == "use_coords$long"] <- "long"
+    
+    vaccs_data <- rbind(new_use_coords,new_use_uc)
+  } else {
+    vaccs_data <- new_use_uc[complete.cases(new_use_uc$UC),]
+  }
+  vaccs_data 
 }
 
 
