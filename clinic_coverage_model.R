@@ -7,7 +7,7 @@
 
 
 # Prep ----
-source(file='PreRunNew.r')
+source(file='PreRun.r')
 library(genridge)
 library(Boruta)
 library(mgcv)
@@ -35,7 +35,7 @@ tehsils.clinic <- tehsils[,c(4:18,20,22,25,30,28)]
 tehsils.clinic <- tehsils.clinic[complete.cases(tehsils.clinic), ]  
 
 
-## Split Tehsil data into train and test set ----
+## Split Tehsil data into train and test set and normalize ----
 
 set.seed(0)
 data_split = sample.split(tehsils.clinic, SplitRatio = 0.8)

@@ -25,6 +25,7 @@ library('htmltools')
 library('caTools')
 library('sp')
 library('dismo')
+library('readxl')
 
 
 # Functions ----

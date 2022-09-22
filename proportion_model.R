@@ -11,7 +11,7 @@
 
 # prep ----
 
-source(file='PreRunNew.r')
+source(file='PreRun.r')
 library(genridge)
 library(Boruta)
 library(mgcv)
@@ -35,7 +35,7 @@ tehsils.ratio <- tehsils[,c(4:18,20,22,25,30,26)]
 
 tehsils.ratio <- tehsils.ratio[complete.cases(tehsils.ratio), ]
 
-### Split into train and test set
+### Split into train and test set and normalize
 set.seed(1)
 data_split = sample.split(tehsils.ratio, SplitRatio = 0.8)
 

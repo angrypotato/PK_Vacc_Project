@@ -8,7 +8,7 @@
 
 # prep ----
 
-source(file='PreRunNew.r')
+source(file='PreRun.r')
 library(genridge)
 library(Boruta)
 library(mgcv)
@@ -36,7 +36,7 @@ tehsils.outreach <-  tehsils[,c(4:18,20,22,25,30,27)]
 
 tehsils.outreach <- tehsils.outreach[complete.cases(tehsils.outreach),]
 
-### Split Tehsil data into train and test set
+### Split Tehsil data into train and test set and normalize
 
 set.seed(43)
 data_split = sample.split(tehsils.outreach, SplitRatio = 0.8)
