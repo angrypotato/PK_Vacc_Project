@@ -16,14 +16,6 @@ library(genridge)
 library(Boruta)
 library(mgcv)
 library(glmnet)
-std_mean <- function(x) sd(x)/sqrt(length(x))
-test_scale <- function(raw_test, train.mean, train.sd) {
-  df <- raw_test
-  for (n in 1:ncol(df)) {
-    df[,n] <- (raw_test[,n] - train.mean[n])/train.sd[n]
-  }
-  df
-}
 
 
 # Tehsil models ----
@@ -99,6 +91,7 @@ ratio.step <- gbm.step(
 
 gbm_pred = predict(ratio.step,pentaTrain)
 R2(pentaTrain[,20],gbm_pred)
+adj.r2(R2(pentaTrain[,20],gbm_pred),96,10)
 
 gbm_cfs <- summary(ratio.step)
 gbm_cfs <- cbind(data.frame(gbm_cfs[,1]),data.frame(gbm_cfs[,2]))
@@ -189,6 +182,7 @@ ratio_gam_model <- gam(gam.form, data = pentaTrain, method = "REML")
 
 ratio_gam_preds <- predict(ratio_gam_model)
 R2(pentaTrain[,20],ratio_gam_preds)
+adj.r2(R2(pentaTrain[,20],ratio_gam_preds),96,10)
 
 ratio_gam_summary <- summary(ratio_gam_model)
 ratio_gam_cfs <- -log10(as.data.frame(ratio_gam_summary$s.table)['p-value'])
@@ -277,6 +271,7 @@ View(data.frame(ridge_outcome@Dimnames[[1]], abs(ridge_outcome@x)))
 
 ratio_ridge_preds <- predict(best_model, newx=data.matrix(pentaTrain[,c(1:4,8:11,15,16)]))
 R2(pentaTrain[,20],ratio_ridge_preds)
+adj.r2(R2(pentaTrain[,20],ratio_ridge_preds),96,10)
 
 
 ### calculate standard error using bootstrapping method 

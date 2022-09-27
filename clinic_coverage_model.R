@@ -13,15 +13,6 @@ library(Boruta)
 library(mgcv)
 library(glmnet)
 
-std_mean <- function(x) sd(x)/sqrt(length(x))
-
-test_scale <- function(raw_test, train.mean, train.sd) {
-  df <- raw_test
-  for (n in 1:ncol(df)) {
-    df[,n] <- (raw_test[,n] - train.mean[n])/train.sd[n]
-  }
-  df
-}
 
 
 # Tehsil models ----
@@ -108,6 +99,7 @@ clinic.step <- gbm.step(
 
 gbm_pred = predict(clinic.step)
 R2(pentaTrain[,20],gbm_pred)
+adj.r2(R2(pentaTrain[,20],gbm_pred),96,10)
 
 gbm_cfs <- summary(clinic.step)
 gbm_cfs <- cbind(data.frame(gbm_cfs[,1]),data.frame(gbm_cfs[,2]))
@@ -199,6 +191,7 @@ clinic_gam_model <- gam(gam.form, data = pentaTrain, method = "REML")
 
 gam_preds <- predict(clinic_gam_model)
 R2(pentaTrain[,20],gam_preds)
+adj.r2(R2(pentaTrain[,20],gam_preds),96,10)
 
 clinic_gam_summary <- summary(gam.mod$finalModel)
 clinic_gam_cfs <- -log10(as.data.frame(summary(gam.mod)$s.table)['p-value'])
@@ -280,6 +273,7 @@ best_lambda <- ridge_model$lambda.min
 ridge_best_model <- glmnet(x, y, alpha = 0, lambda = best_lambda,family = c("gaussian"), standardize = F)
 preds <- predict(ridge_best_model, newx=data.matrix(pentaTrain[, c(1:4,6:13,16)]))
 R2(pentaTrain[,20],preds)
+adj.r2(R2(pentaTrain[,20],preds),96,10)
 
 ridge_outcome <- coef(ridge_best_model)
 View(data.frame(ridge_outcome@Dimnames[[1]], abs(ridge_outcome@x)))

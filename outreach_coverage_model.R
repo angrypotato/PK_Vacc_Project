@@ -14,17 +14,6 @@ library(Boruta)
 library(mgcv)
 library(glmnet)
 
-std_mean <- function(x) sd(x)/sqrt(length(x))
-
-test_scale <- function(raw_test, train.mean, train.sd) {
-  df <- raw_test
-  for (n in 1:ncol(df)) {
-    df[,n] <- (raw_test[,n] - train.mean[n])/train.sd[n]
-  }
-  df
-}
-
-
 
 # Tehsil ----
 
@@ -107,6 +96,7 @@ outreach.step <- gbm.step(
 
 gbm_pred = predict(outreach.step)
 R2(pentaTrain[,20],gbm_pred)
+adj.r2(R2(pentaTrain[,20],gbm_pred),96,10)
 
 ### Get the relative influences provided by GBM to see which features are being most utilized by the model
 
@@ -198,6 +188,7 @@ outreach_gam_model <- gam(gam.form, data = pentaTrain, method = "REML")
 
 preds <- predict(outreach_gam_model)
 R2(pentaTrain[,20],preds)
+adj.r2(R2(pentaTrain[,20],gam_preds),96,10)
 
 outreach_gam_summary <- summary(outreach_gam_model)
 outreach_gam_cfs <- -log10(as.data.frame(outreach_gam_summary$s.table)['p-value'])
@@ -280,6 +271,7 @@ ridge_best_model <- glmnet(x, y, alpha = 0, lambda = best_lambda, standardize = 
 
 preds <- predict(ridge_best_model, newx=data.matrix(pentaTrain[, c(1,2,4,6:8,10,11,15)]))
 R2(pentaTrain[,20],preds)
+adj.r2(R2(pentaTrain[,20],preds),96,10)
 
 ridge_outcome <- coef(ridge_best_model)
 View(data.frame(ridge_outcome@Dimnames[[1]], ridge_outcome@x))

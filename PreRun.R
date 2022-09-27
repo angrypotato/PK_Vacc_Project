@@ -1023,6 +1023,21 @@ nz_mean <- function(x){
 }
 
 
+## functions for model building ----
+
+std_mean <- function(x) sd(x)/sqrt(length(x))
+
+test_scale <- function(raw_test, train.mean, train.sd) {
+  df <- raw_test
+  for (n in 1:ncol(df)) {
+    df[,n] <- (raw_test[,n] - train.mean[n])/train.sd[n]
+  }
+  df
+}
+
+adj.r2 <- function(r2, n, p) {
+  1 - (1-r2)*(n-1)/(n-p-1)
+}
 
 
 
