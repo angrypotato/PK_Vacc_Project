@@ -12,7 +12,7 @@ library("sf")
 
 tehsils <- read.csv("results/tehsils_complete_9.15.csv")
 
-tehsils.plot <- tehsils[-c(24,25,31,61,113), c(28,27,26,4:18,20,22,30,25)] %>%
+tehsils.plot <- tehsils[-c(24,25,31,61,113), c(28,27,26,3:17,19,21,23,22)] %>%
   rename("Outreach Proportion" = OutreachProportion,
          "Clinic Vacc Covereage"= TotalClinicsCoverage, "Outreach Vacc Coverage" =TotalOutreachCoverage, "Fertility" = fertility, 
          "Child Population"=child_population, "Population Density"=population_density, 
@@ -32,17 +32,13 @@ corrplot(tehsils.cor, tl.col = "black", tl.cex = 1.8, tl.srt = 45, cl.cex = 1.8)
 
 ucs <- read.csv("results/uc_complete_clean.csv")
 
-ucs.plot <- ucs[,-c(1:4)] %>%   # 7 features 
+ucs.plot <- ucs[,-c(1:5)] %>%   # 7 features 
   as.data.frame() %>%
   na.omit() %>%
-  dplyr::select(10:8,3,6,1,2,4)
-
-ucs.plot <- ucs[,-c(1:4)] %>%   # 7 features 
-  as.data.frame() %>%
-  na.omit() %>%
-  dplyr::select(10:8,3,6,1,4,2) %>%
+  dplyr::select(12:10,7:1) %>%
   rename("Outreach Proportion" = OutreachProportion,"Clinic Vacc Covereage"= TotalClinicsCoverage, "Outreach Vacc Coverage" =TotalOutreachCoverage, 
-         "Fertility" = fertility, "Child Population"=child_population, "Distance to Cities"=distance_to_cities, "Poverty"=poverty,"Elevation"=elevation)
+         "Fertility" = fertility, "Child Population"=child_population, "Distance to Cities"=distance_to_cities, "Poverty"=poverty,"Elevation"=elevation,
+         "Population density" = population_density)
 
 ucs.cor <- cor(ucs.plot, method = c("pearson"))
 
@@ -66,13 +62,13 @@ my_theme <- theme(legend.position = c(0.9, 0.2),
 
 ## read in punjab province shape data
 
-punjab.polygon <- st_read("VaccinationStudy/Data/Adminbdy Shapefile/Tehsil_Boundary.shp") %>%
+punjab.polygon <- st_read("D:/Xiaoting/Vaccination_Project/VaccinationStudy/Data/Adminbdy Shapefile/Tehsil_Boundary.shp") %>%
   filter(PROVINCE == "PUNJAB") %>%
   mutate(TEHSIL = sapply(TEHSIL,solve_name)) 
 
 punjab.polygon[which(punjab.polygon$TEHSIL == "SAHIWAL" & punjab.polygon$DISTRICT == "SAHIWAL"),]$TEHSIL <- "SAHIWAL_SAHIWAL"
 
-punjab.map <- merge(punjab.polygon, tehsils.map[,c(2,24:28)], by = "TEHSIL", all.x = T)
+punjab.map <- merge(punjab.polygon, tehsils.map[,c(2,22:29)], by = "TEHSIL", all.x = T)
 
 
 ## single plots ----
@@ -86,13 +82,13 @@ fac_num <- ggplot(punjab.map) +
 ## Fig 2B
 in_clinic <- ggplot(punjab.map) + 
   geom_sf(aes(fill=TotalClinicsCoverage)) +
-  scale_fill_gradient(name = "In-clinic vacc per\nchild capita", low="lightgreen", high="darkgreen", breaks = seq(0,0.2,0.05)) +
+  scale_fill_gradient(name = "In-clinic vacc per\nchild capita", low="lightgreen", high="darkgreen", breaks = seq(0,0.15,0.025)) +
   my_theme 
 
 ## Fig 2C
 outreach <- ggplot(punjab.map) + 
   geom_sf(aes(fill=TotalOutreachCoverage)) +
-  scale_fill_gradient(name = "Outreach vacc per\nchild capita", low="lightgreen", high="darkgreen", breaks = seq(0.1,0.7,0.1)) +
+  scale_fill_gradient(name = "Outreach vacc per\nchild capita", low="lightgreen", high="darkgreen", breaks = seq(0.0,0.7,0.1)) +
   my_theme 
 
 ## Fig 2D
