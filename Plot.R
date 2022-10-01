@@ -62,7 +62,7 @@ my_theme <- theme(legend.position = c(0.9, 0.2),
 
 ## read in punjab province shape data
 
-punjab.polygon <- st_read("D:/Xiaoting/Vaccination_Project/VaccinationStudy/Data/Adminbdy Shapefile/Tehsil_Boundary.shp") %>%
+punjab.polygon <- st_read("~/Documents/vacc project/Vaccination_Project/VaccinationStudy/Data/Adminbdy Shapefile/Tehsil_Boundary.shp") %>%
   filter(PROVINCE == "PUNJAB") %>%
   mutate(TEHSIL = sapply(TEHSIL,solve_name)) 
 
@@ -102,13 +102,13 @@ tehsils.scatter <- tehsils[order(tehsils$OutreachProportion, decreasing = T),] %
   mutate(Tehsil = as.numeric(1:137))
 theme_set(theme_classic())
 e <- ggplot(tehsils.scatter, aes(x=Tehsil, y= OutreachProportion)) +
-  geom_point(size=7, shape=1) +
+  geom_point(size=10, shape=19) +
   scale_x_continuous(breaks = seq(from = 0, to = 140, by = 20)) +
   scale_y_continuous(breaks = seq(from = 0.5, to = 1, by = 0.1)) +
   xlab("Tehsil (index)") + 
   ylab("Outreach/all vaccination ratio") +
-  theme(axis.title = element_text(size = 45,color = "black", face="bold"),
-        axis.text = element_text(size =40))
+  theme(axis.title = element_text(size = 60,color = "black", face="bold"),
+        axis.text = element_text(size =50,color = "black", face="bold"),axis.line=element_line(size=3))
 
 ## map on the upper left
 pak <- getData("GADM", country="PK", level=1)
