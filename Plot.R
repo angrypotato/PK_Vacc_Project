@@ -62,7 +62,7 @@ my_theme <- theme(legend.position = c(0.9, 0.2),
 
 ## read in punjab province shape data
 
-punjab.polygon <- st_read("~/Documents/vacc project/Vaccination_Project/VaccinationStudy/Data/Adminbdy Shapefile/Tehsil_Boundary.shp") %>%
+punjab.polygon <- st_read("D:/Xiaoting/Vaccination_Project/VaccinationStudy/Data/Adminbdy Shapefile/Tehsil_Boundary.shp") %>%
   filter(PROVINCE == "PUNJAB") %>%
   mutate(TEHSIL = sapply(TEHSIL,solve_name)) 
 
@@ -74,6 +74,7 @@ punjab.map <- merge(punjab.polygon, tehsils.map[,c(2,22:29)], by = "TEHSIL", all
 ## single plots ----
 
 ## Fig 2A
+punjab.map[25,9] <- 0
 fac_num <- ggplot(punjab.map) + 
   geom_sf(aes(fill=fac_number)) +
   scale_fill_gradient(name = "Number of\nClinics", low="lightgreen", high="darkgreen") +
